@@ -9,9 +9,6 @@ const Inputs = ({statSetter, setStartLevel, setEndLevel, submitHandler}) => {
         if (e.target.value.length > maxLength) {
              e.target.value = e.target.value.slice(0, maxLength)
         }
-        if (!/[0-9]/.test(e.key)) {
-            e.preventDefault();
-        }
         statSetter(e)
     }
 
@@ -21,37 +18,37 @@ const Inputs = ({statSetter, setStartLevel, setEndLevel, submitHandler}) => {
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Str</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="number" id="str" onChange={eventHandler}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="str" onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault()}}} onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Dex</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="number" id="dex" onChange={eventHandler}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="dex" onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault()}}} onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Int</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="number" id="int" onChange={eventHandler}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="int" onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault()}}} onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Luk</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="number" id="luk" onChange={eventHandler}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="luk" onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault()}}} onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Wa</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="number" id="wa" onChange={eventHandler}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="wa" onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault()}}} onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Ma</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="number" id="ma" onChange={eventHandler}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="ma" onKeyPress={(e) => {if (!/[0-9]/.test(e.key)) {e.preventDefault()}}} onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
             </Grid>
