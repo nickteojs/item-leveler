@@ -9,6 +9,9 @@ const Inputs = ({statSetter, setStartLevel, setEndLevel, submitHandler}) => {
         if (e.target.value.length > maxLength) {
              e.target.value = e.target.value.slice(0, maxLength)
         }
+        if (!/[0-9]/.test(e.key)) {
+            e.preventDefault();
+        }
         statSetter(e)
     }
 
