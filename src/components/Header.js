@@ -1,5 +1,5 @@
 import React from 'react'
-import {IconButton, Flex, Text, Heading} from '@chakra-ui/react'
+import {IconButton, Flex, Heading} from '@chakra-ui/react'
 import {SunIcon, MoonIcon} from '@chakra-ui/icons'
 
 const Header = ({ colorMode, toggleColorMode }) => {
