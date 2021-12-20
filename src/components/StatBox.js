@@ -8,7 +8,7 @@ const StatBox = ({ statArray }) => {
         <Grid templateColumns={{base: 'repeat(1)', md:'repeat(2, 0.16fr)', lg: 'repeat(3, 0.16fr)', xl: 'repeat(4, 0.16fr)', '2xl': 'repeat(5, 0.16fr)'}} gap={4}>
             {statArray.map((subArray, index, array) => {
                 let firstLevel = array[index][0].lvl
-                return <GridItem bg={bg} borderRadius="10" p={6} mt={5} w={[210, 270]}  boxShadow='md'>
+                return <GridItem key={`lvl${index+1}`}bg={bg} borderRadius="10" p={6} mt={5} w={[210, 270]} boxShadow='md'>
                     <Heading size="md" mb={4}>Level: {firstLevel}</Heading>
                     {subArray.map((e, i) => {
                         // Renaming Variables
@@ -16,7 +16,7 @@ const StatBox = ({ statArray }) => {
                         let normalStat = e.normalStat
                         let maxFromNorm = e.maxFromNorm
                         let maxOfMax = e.maxOfMax
-                        return <Box _notLast={{borderBottom: '2px', textAlign: 'start'}}>
+                        return <Box key={`lvl${index+1}-${statName}`}_notLast={{borderBottom: '2px', textAlign: 'start'}}>
                             {/* Normal Stat */}
                             <Box my={3}>
                                 {index === 0
