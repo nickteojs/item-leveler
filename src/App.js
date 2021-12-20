@@ -1,6 +1,9 @@
 import './App.css';
 import React, {useState, useEffect} from 'react'
 import StatBox from './components/StatBox';
+import Header from './components/Header';
+import Inputs from './components/Inputs';
+import { useToast, Flex, Box, Text, useColorMode, useColorModeValue } from '@chakra-ui/react'
 
 function App() {
   const [baseStr, setBaseStr] = useState(0)
@@ -9,13 +12,14 @@ function App() {
   const [baseLuk, setBaseLuk] = useState(0)
   const [baseWa, setBaseWa] = useState(0)
   const [baseMa, setBaseMa] = useState(0)
-  const [level, setLevel] = useState(0)
   const [startLevel, setStartLevel] = useState(1)
   const [endLevel, setEndLevel] = useState(7)
-  const [strArray, setStrArray] = useState([])
   const [statArray, setStatArray] = useState([])
-  const [testArray, setTestArray] = useState([])
   const [baseStats, setBaseStats] = useState([])
+
+  const toast = useToast()
+  const {colorMode, toggleColorMode} = useColorMode()
+  const bg = useColorModeValue('gray.50', 'gray.900')
  
   const statSetter = e => {
     switch(e.target.id) {
@@ -79,201 +83,6 @@ function App() {
   }
 
   const calculateIncrease = () => {
-    // Check number of levels to go through
-    let levels = endLevel - startLevel 
-    setLevel(level + 1)
-    const fullArray = []
-    baseStats.forEach(stat => {
-
-    const getNormalRoll = stat => {
-      let indivX = 1 + Math.floor(stat/4)
-      let indivY = (indivX * (indivX + 1) / 2) + indivX
-      let randomZ = Math.floor((Math.random() * indivY + 1))
-      if (randomZ < indivX) { 
-        return 0 
-      } else {
-        return (1 + Math.floor((-1 + Math.sqrt((8 * (randomZ - indivX)) + 1)) / 2));          
-      }
-    }
-
-    const getNormalRollMod = (stat, mod) => {
-      let indivX = 1 + Math.floor(stat/mod)
-      let indivY = (indivX * (indivX + 1) / 2) + indivX
-      let randomZ = Math.floor((Math.random() * indivY + 1))
-      if (randomZ < indivX) {
-        return 0 
-      } else {
-        return (1 + Math.floor((-1 + Math.sqrt((8 * (randomZ - indivX)) + 1)) / 2));          
-      }
-    }
-
-    const getMaxRolls = stat => {
-      let i = 0;
-      let iterations = 100000;
-      let highestValue = 0;
-      while (i <= iterations) {
-        const value = getNormalRoll(stat)
-        if (value > highestValue) {
-          highestValue = value;
-        }
-        i++
-      }
-      return highestValue
-    }
-
-    const getMaxRollsMod = (stat, mod) => {
-      let i = 0;
-      let iterations = 100000;
-      let highestValue = 0;
-      while (i <= iterations) {
-        const value = getNormalRollMod(stat, mod)
-        if (value > highestValue) {
-          highestValue = value;
-        }
-        i++
-      }
-      return highestValue
-    }
-
-    // For each stat, run this function that does the calculations.
-    const newCalculate = stat => {
-      let baseStat = Object.values(stat)[0]
-      let statName = Object.keys(stat)[0]
-      console.log(stat)
-      const tempArray = []
-      for (let i = 0; i<=levels; i++) {
-        if (baseStat > 0) {
-          if (i === 0) {
-            tempArray.push({
-              stat: statName,
-              lvl: startLevel,
-              normalStat: baseStat
-            })
-          } if (i === 1) {
-            // At this point, the stat passed in is {str:15}
-            // Do check here, pass in 2 arguments? 1st one is the modifier, second one is the stat as a number
-            let mod = checkMod(Object.keys(stat)[0])
-            let statValue = Object.values(stat)[0]
-            console.log(mod, statValue)
-            let normalRoll = getNormalRollMod(statValue, mod)
-            let normalStat = normalRoll + baseStat
-            let maxFromNorm = getMaxRollsMod(statValue, mod) + baseStat
-            tempArray.push({
-              stat: statName,
-              lvl: startLevel + 1, 
-              normalStat: normalStat, 
-              maxFromNorm: maxFromNorm, 
-              maxOfMax: maxFromNorm
-            })
-          } if (i > 1) {
-            let mod = checkMod(tempArray[i-1].stat)
-            let prevLevel = tempArray[i-1].lvl
-            let prevStat = tempArray[i-1].normalStat
-            let prevMom = tempArray[i-1].maxOfMax
-            console.log(tempArray)
-            let normalRoll = getNormalRollMod(prevStat, mod) + prevStat
-            let maxFromNorm = getMaxRollsMod(prevStat, mod) + prevStat
-            let maxOfMax = getMaxRollsMod(prevMom, mod) + prevMom
-            tempArray.push({
-              stat: statName,
-              lvl: prevLevel + 1,
-              normalStat: normalRoll,
-              maxFromNorm: maxFromNorm,
-              maxOfMax: maxOfMax
-            })
-          }
-        }
-      }
-      fullArray.push(tempArray)
-      const completeArray = fullArray.filter(i => i.length>0)
-      setStatArray(completeArray)
-    }
-    newCalculate(stat)
-
-    
-
-    // Object Keys/Values
-    // This takes the first value from the statArray's elements, {str, strGain: maxStr}, so in this case str.
-    let statName = Object.keys(stat)[0]
-    const tempArray = []
-    if (statName === "str") {
-      let strStat = Object.values(stat)[0]
-      console.log(strStat)
-      for (let i = 0; i<=levels; i++) {
-        if (i === 0) {
-          tempArray.push({
-            lvl: startLevel,
-            normalStat: strStat
-          })
-        } if (i === 1) {
-          let normalRoll = getNormalRoll(strStat)
-          let normalStat = normalRoll + strStat
-          let maxFromNorm = getMaxRolls(strStat) + strStat
-          tempArray.push({
-            lvl: startLevel + 1, 
-            normalStat: normalStat, 
-            maxFromNorm: maxFromNorm, 
-            maxOfMax: maxFromNorm
-          })
-        } if (i > 1) {
-          let prevLevel = tempArray[i-1].lvl
-          let prevStat = tempArray[i-1].normalStat
-          let prevMom = tempArray[i-1].maxOfMax
-          let normalRoll = getNormalRoll(prevStat) + prevStat
-          let maxFromNorm = getMaxRolls(prevStat) + prevStat
-          let maxOfMax = getMaxRolls(prevMom) + prevMom
-          tempArray.push({
-            lvl: prevLevel + 1,
-            normalStat: normalRoll,
-            maxFromNorm: maxFromNorm,
-            maxOfMax: maxOfMax
-          })
-        }
-      }
-      console.log(tempArray)
-      setStrArray(tempArray)
-    }
-
-      if (statName === "dex") {
-        let dexStat = Object.values(stat)[0]
-        console.log(dexStat)
-        for (let i = 0; i<=levels; i++) {
-          if (i === 0) {
-            tempArray.push({
-              lvl: startLevel,
-              normalStat: dexStat
-            })
-          } if (i === 1) {
-            let normalRoll = getNormalRoll(dexStat)
-            let normalStat = normalRoll + dexStat
-            let maxFromNorm = getMaxRolls(dexStat) + dexStat
-            tempArray.push({
-              lvl: startLevel + 1, 
-              normalStat: normalStat, 
-              maxFromNorm: maxFromNorm, 
-              maxOfMax: maxFromNorm
-            })
-          } if (i > 1) {
-            let prevLevel = tempArray[i-1].lvl
-            let prevStat = tempArray[i-1].normalStat
-            let prevMom = tempArray[i-1].maxOfMax
-            let normalRoll = getNormalRoll(prevStat) + prevStat
-            let maxFromNorm = getMaxRolls(prevStat) + prevStat
-            let maxOfMax = getMaxRolls(prevMom) + prevMom
-            tempArray.push({
-              lvl: prevLevel + 1,
-              normalStat: normalRoll,
-              maxFromNorm: maxFromNorm,
-              maxOfMax: maxOfMax
-            })
-          }
-        }
-      }
-    })
-
-    // BLOCK 2
-    // New function to organise data by levels
-  const levelOrg = () => {
     let levels = endLevel - startLevel
     let levelArray = []    
     let lvl2Array = []
@@ -344,7 +153,6 @@ function App() {
             let maxFromNorm = getMaxRollsMod(prevNorm, mod) + prevNorm
             let maxFromMax = getMaxRollsMod(prevMom, mod) + prevMom
             let elsRoll = Math.ceil(0.88 * getMaxRollsMod(prevMom, mod))
-            // Error because you are not pushing anything past lvl 3 / OR ur object is wrong - should be pushing to end array
             fillArray.push({
               stat: statName,
               lvl: prevLevel + 1,
@@ -361,16 +169,38 @@ function App() {
         }
       })
     }
-    setTestArray(endArray)
+    setStatArray(endArray)
   }
-  levelOrg();
-  }
-
-  
 
   const submitHandler = () => {
-    setStrArray([])
-    calculateIncrease();
+    let stats = [baseStr, baseDex, baseInt, baseLuk, baseWa, baseMa]
+    let filled = false
+    // Check whether user has entered any stats
+    stats.forEach(stat => {
+      if (stat !== 0 ) {
+        filled = true
+      }
+    })
+
+    if (filled) {
+      calculateIncrease();
+    } else {
+        return (toast({
+          title: 'Please enter some stats.',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+        }))
+    }
+  }
+
+  function checkLocalStorage () {
+    const item = JSON.parse(localStorage.getItem('stats'))
+    if (item) {
+      setStatArray(item)
+    } else {
+      console.log("No items")
+    }
   }
 
   // Update the statsArray values with the user's stat input & resets whenever user changes values.
@@ -385,79 +215,36 @@ function App() {
     ])
   }, [baseStr, baseDex, baseInt, baseLuk, baseWa, baseMa])
 
-  // useEffect(() => {
-  //   setStrArray([])
-  // }, [startLevel, endLevel, baseStr])
-
   useEffect(() => {
     setLevelSelect()
   }, [startLevel])
+
+  useEffect(() => {
+    checkLocalStorage()
+  }, [])
+
+  // Check on page load if statArray exists, if it does then save it to localStorage
+  useEffect(() => {
+    if (statArray.length > 0) {
+      localStorage.setItem('stats', JSON.stringify(statArray))
+    } else { 
+      return 
+    }
+  }, [statArray])
   
   return (
-    <div className="container">
-      <h1>Item Leveler</h1>
-
-      <label htmlFor="str">STR</label>
-      <input id="str" type="text" onChange={statSetter}/>
-      <label htmlFor="dex">DEX</label>
-      <input id="dex" type="text" onChange={statSetter}/>
-      <label htmlFor="int">INT</label>
-      <input id="int" type="text" onChange={statSetter}/>
-      <label htmlFor="luk">LUK</label>
-      <input id="luk" type="text" onChange={statSetter}/>
-      <label htmlFor="wa">WA</label>
-      <input id="wa" type="text" onChange={statSetter}/>
-      <label htmlFor="ma">MA</label>
-      <input id="ma" type="text" onChange={statSetter}/>
-      <label htmlFor="startLevel">Start Level</label>
-
-      <select name="startLevel" id="startLevel" onChange={e => setStartLevel(+e.target.value)}>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-      </select>
-
-      <label htmlFor="endLevel">End Level</label>
-      <select name="endLevel" id="endLevel" onChange={e => setEndLevel(+e.target.value)}>
-      </select>
-
-      <button onClick={submitHandler}>Submit</button>
-      {statArray.length && testArray.length ? <StatBox strArray={strArray} statArray={statArray} testArray={testArray}/> : "No stats yet"}
-      {/* {strArray.map(array => {
-        return array.map(item => (
-          <li>{item}</li>
-        ))
-        }       
-      )} */}
-      {/* {statsArray.map(stat => {
-        let baseStat = Object.keys(stat)[0]
-        let baseStatValue = Object.values(stat)[0]
-        let baseIncrease = Object.values(stat)[1]
-        let maxFromBase = Object.values(stat)[2]
-        return <>
-          {baseStatValue !== 0 ? <div className="statCard">
-          <h1>{baseStat}: {(baseStatValue + baseIncrease)} +<span className="statIncrease">{baseIncrease}</span></h1>
-          <p>Max from {baseStatValue}: {maxFromBase}</p>
-          </div> : null}
-        </>
-      })} */}
-      {/* {strArray.map((array, index) => {
-        console.log(strArray[0])
-        let stats = strArray[0]
-          {stats.forEach(stat => (
-              <h1>{stat}</h1>
-      ))}
-      })} */}
-      
-    </div>
-    
+      <Box>
+        <Flex minH="100vh" bg={bg} flexDirection="column" px={{base: '6', md: '24'}} pt={12} alignItems={{base: 'center', lg: 'flex-start'}}>
+          <Header colorMode={colorMode} toggleColorMode={toggleColorMode}/>
+          <Inputs statSetter={statSetter} setStartLevel={setStartLevel} setEndLevel={setEndLevel} submitHandler={submitHandler}/>
+          {statArray.length ? <Box fontSize={{base: "sm", sm: "md"}}>
+            <StatBox statArray={statArray}/>
+          </Box> : null}
+          <Box py={10}>
+            <Text mt={6} fontSize="sm">Created by Moweyy.</Text>
+          </Box>
+        </Flex>
+      </Box>
   );
 }
 
