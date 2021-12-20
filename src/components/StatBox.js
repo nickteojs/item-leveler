@@ -3,12 +3,12 @@ import { Box, Flex, Grid, GridItem, Heading, Text } from '@chakra-ui/layout'
 import { useColorModeValue } from '@chakra-ui/react'
 
 const StatBox = ({ statArray }) => {
-    const bg = useColorModeValue('gray.100', 'gray.800')
+    const bg = useColorModeValue('gray.100', 'gray.700')
     return (
         <Grid templateColumns={{base: 'repeat(1)', md:'repeat(2, 0.16fr)', lg: 'repeat(3, 0.16fr)', xl: 'repeat(4, 0.16fr)', '2xl': 'repeat(5, 0.16fr)'}} gap={4}>
             {statArray.map((subArray, index, array) => {
                 let firstLevel = array[index][0].lvl
-                return <GridItem key={`lvl${index+1}`}bg={bg} borderRadius="10" p={6} mt={5} w={[210, 270]} boxShadow='md'>
+                return <GridItem key={`lvl${index+1}`}bg={bg} borderRadius="10" p={6} mt={5} w={[240, 270]} boxShadow='md'>
                     <Heading size="md" mb={4}>Level: {firstLevel}</Heading>
                     {subArray.map((e, i) => {
                         // Renaming Variables
