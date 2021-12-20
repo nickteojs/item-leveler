@@ -4,43 +4,51 @@ import { Box, Grid, Flex, Select, FormControl, FormLabel, Input, Button, useColo
 const Inputs = ({statSetter, setStartLevel, setEndLevel, submitHandler}) => {
     const bg = useColorModeValue('gray.200', 'gray.700')
 
+    const eventHandler = e => {
+        const maxLength = 3
+        if (e.target.value.length > maxLength) {
+             e.target.value = e.target.value.slice(0, maxLength)
+        }
+        statSetter(e)
+    }
+
     return (
         <>
             <Grid templateColumns={{base: "repeat(3, 0.05fr)", sm: 'repeat(6, 64px)'}} gap={{base: '2', sm: '4'}} mt={6}>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Str</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="text" id="str" onChange={statSetter}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="str" onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Dex</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="text" id="dex" onChange={statSetter}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="dex" onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Int</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="text" id="int" onChange={statSetter}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="int" onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Luk</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="text" id="luk" onChange={statSetter}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="luk" onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Wa</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="text" id="wa" onChange={statSetter}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="wa" onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
                 <FormControl w="16">
                     <Box>
                         <FormLabel>Ma</FormLabel>
-                        <Input bg={bg} variant='filled' w="16" type="text" id="ma" onChange={statSetter}></Input>
+                        <Input bg={bg} variant='filled' w="16" type="number" id="ma" onChange={eventHandler}></Input>
                     </Box>
                 </FormControl>
             </Grid>

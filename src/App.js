@@ -16,6 +16,7 @@ function App() {
   const [endLevel, setEndLevel] = useState(7)
   const [statArray, setStatArray] = useState([])
   const [baseStats, setBaseStats] = useState([])
+  const [validated, setValidated] = useState(false)
 
   const toast = useToast()
   const {colorMode, toggleColorMode} = useColorMode()
@@ -147,7 +148,6 @@ function App() {
             let prevArray = (endArray[i-1].filter(i => i.stat === statName))
             let prevLevel = prevArray[0].lvl
             let prevNorm = prevArray[0].normalStat
-            let prevMaxFromNorm = prevArray[0].maxFromNorm
             let prevMom = prevArray[0].maxOfMax
             let normalStat = getNormalRollMod(prevNorm, mod) + prevNorm
             let maxFromNorm = getMaxRollsMod(prevNorm, mod) + prevNorm
@@ -172,21 +172,36 @@ function App() {
     setStatArray(endArray)
   }
 
-  const submitHandler = () => {
+  const inputValidation = () => {
     let stats = [baseStr, baseDex, baseInt, baseLuk, baseWa, baseMa]
     let filled = false
-    // Check whether user has entered any stats
-    stats.forEach(stat => {
-      if (stat !== 0 ) {
-        filled = true
-      }
-    })
+    // 1. Check if at least 1 input is filled
+    if (stats.some(s => s !== 0)) {
+      filled = true
+    }
 
+    // 2. IF at least 1 input is filled, check inputs and see if any are negative
     if (filled) {
+      if (stats.some(s => s<0)) {
+        setValidated(false)
+        return (toast({
+          title: 'Please use positive values!',
+          status: 'warning',
+          duration: 1500,
+          isClosable: true,
+        }))
+      } else {
+        setValidated(true)
+      }
+    }
+  }
+
+  const submitHandler = () => {
+    if (validated) {
       calculateIncrease();
     } else {
         return (toast({
-          title: 'Please enter some stats.',
+          title: 'Please insert stats!',
           status: 'warning',
           duration: 3000,
           isClosable: true,
@@ -222,6 +237,10 @@ function App() {
   useEffect(() => {
     checkLocalStorage()
   }, [])
+
+  useEffect(() => {
+    inputValidation()
+  }, [baseStats])
 
   // Check on page load if statArray exists, if it does then save it to localStorage
   useEffect(() => {
