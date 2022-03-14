@@ -259,9 +259,13 @@ function App() {
           {statArray.length ? <Box fontSize={{base: "sm", sm: "md"}}>
             <StatBox statArray={statArray}/>
           </Box> : null}
-          <Box py={10}>
-            <Text mt={6} fontSize="sm">Created by Moweyy.</Text>
+          <Box pt={10} px={{base: '10', md: '0'}}>
+            <Text textAlign={{base: 'center', lg: 'left'}}>Enhanced Legendary Scroll (ELS) roll is the minimum stat (88% of max) you should look for when ELS-ing. Feel free to take any stats you want, it's just a recommendation.</Text>
           </Box>
+          <Box py={10}>
+            <Text mb={6} fontSize="sm">Created by Moweyy.</Text>
+          </Box>
+          
         </Flex>
       </Box>
   );
