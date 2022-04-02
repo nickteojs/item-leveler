@@ -175,6 +175,7 @@ function App() {
   const inputValidation = () => {
     let stats = [baseStr, baseDex, baseInt, baseLuk, baseWa, baseMa]
     let filled = false
+    setValidated(false)
     // 1. Check if at least 1 input is filled
     if (stats.some(s => s !== 0)) {
       filled = true
