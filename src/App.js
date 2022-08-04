@@ -21,6 +21,7 @@ function App() {
   const toast = useToast()
   const {colorMode, toggleColorMode} = useColorMode()
   const bg = useColorModeValue('gray.50', 'gray.900')
+  const bgInfo = useColorModeValue('gray.100', 'gray.700')
  
   const statSetter = e => {
     switch(e.target.id) {
@@ -298,13 +299,13 @@ function App() {
           {statArray.length ? <Box fontSize={{base: "sm", sm: "md"}}>
             <StatBox statArray={statArray}/>
           </Box> : null}
-          <Box pt={10} px={{base: '10', md: '0'}}>
-            <Text textAlign={{base: 'center', lg: 'left'}}>Enhancement Scroll (ES) roll is the minimum stat (88% of max) you should look for when ES-ing. Feel free to take any stats you want, it's just a recommendation.</Text>
+          <Box w={{base: "210px", sm: "460px", md: "550px", lg: "100%"}} bg={bgInfo} borderRadius="15" mt={10} py={6} px={{base: '10', md: '5'}}>
+            <Text mb={2} textAlign={{base: 'center'}}>• <b>DO NOT</b> use Lvl 1-5 for Lvl 5-10 or vice versa, the formulae are <b>different</b>.</Text>
+            <Text textAlign={{base: 'center'}}>• Enhancement Scroll (ES) roll is the recommended minimum stat (88% of max) you should take but pick any stats you want, it's just a recommendation.</Text>
           </Box>
           <Box py={10}>
-            <Text mb={6} fontSize="sm">Created by Moweyy.</Text>
+            <Text textAlign={{base: 'center'}} mb={6} fontSize="sm">Created by Moweyy.</Text>
           </Box>
-          
         </Flex>
       </Box>
   );
