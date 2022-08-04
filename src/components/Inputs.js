@@ -65,7 +65,6 @@ const Inputs = ({statSetter, setStartLevel, setEndLevel, submitHandler}) => {
                             <option value="7">7</option>
                             <option value="8">8</option>
                             <option value="9">9</option>
-                            <option value="10">10</option>
                         </Select>
                     </Box>
                     <Box w="24">

@@ -39,8 +39,8 @@ const StatBox = ({ statArray }) => {
                             </Box>
                             {/* ELS Rolls */}
                             <Box>
-                                {(e.stat !== "ma" && e.stat !== "wa") && Boolean(index)
-                                ? <Flex my={3} justifyContent="space-between">ELS Roll (88%) : <span className="endWord">+{e.elsRoll}</span></Flex>
+                                {(e.stat !== "ma" && e.stat !== "wa" && e.lvl <=5) && Boolean(index)
+                                ? <Flex my={3} justifyContent="space-between">ES Roll (88%) : <span className="endWord">+{e.elsRoll}</span></Flex>
                                 : null}
                             </Box>
                         </Box>

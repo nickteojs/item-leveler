@@ -13,3 +13,53 @@
 
   // * for figuring out Speed and Jump, if the Speed/Jump stat doesn't skip a level, the level up will always be +1
   // if an item skips all stats on a level up then all the stats are rerolled. this is why items with one stat line never skip levels.
+
+
+  New formula
+  modifiers: 
+  str dex int luk = 8
+  hp mp att acc = 16
+  matk = 4
+
+  if (itemLevel >= 5) {
+      int min = 1;
+      int max = curStat / statModifier + 2;
+
+      double mean = (max + min) / 2.0;
+      double deviation = (max - mean) / 2.0;
+
+      double v;
+
+      do {
+          v = Randomizer.RAND.nextGaussian() * deviation + mean;
+      } while (v < min || v > max);
+
+      upgrade = (int) Math.round(v);
+  } else {
+      upgrade = Randomizer.rand(1, curStat / statModifier + 2);
+  }
+
+
+    // upgrade = Randomizer.rand(1, curStat / statModifier + 2);
+    // public static int rand(final int lbound, final int ubound) {
+    //   return (int) ((rand.nextDouble() * (ubound - lbound + 1)) + lbound);
+    //   return (int) ((rand.nextDouble() * ubound + 1 ))
+    // }
+
+  Example:
+  Claw
+  LVL 1: 29 luk 124 wa
+  LVL 5: 46 Luk 162 wa
+  LVL 10: 67 Luk 194 wa
+
+  1h axe
+  LVL 1: 47 Str 178 wa
+  LVL 5: 72 Str 232 wa
+  LVL 10: 104 Str 294 wa
+
+  ELS 
+  47 str 182 wa highest roll (7str,13 wa)
+
+  1-2 20 luk 68 att -> 24 luk 77 att (4luk/9wa)
+  2-3 24 luk 77 att -> 30 luk 86 att (6luk/9wa)
+  3-4 30 luk 86 att -> 36 luk 97 att (6luk/11wa)

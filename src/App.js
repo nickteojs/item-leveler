@@ -13,7 +13,7 @@ function App() {
   const [baseWa, setBaseWa] = useState(0)
   const [baseMa, setBaseMa] = useState(0)
   const [startLevel, setStartLevel] = useState(1)
-  const [endLevel, setEndLevel] = useState(7)
+  const [endLevel, setEndLevel] = useState(5)
   const [statArray, setStatArray] = useState([])
   const [baseStats, setBaseStats] = useState([])
   const [validated, setValidated] = useState(false)
@@ -51,7 +51,7 @@ function App() {
     let startLevelSelector = document.getElementById('startLevel')
     let maxLevelSelector = document.getElementById('endLevel')
     let i = startLevel
-    let limit = 11
+    let limit = 10
     let options = ""
     while (i < limit) {
       options += `<option value=${i+1}>${i+1}</option>`
@@ -59,27 +59,28 @@ function App() {
       i++
     }
 
-    if (+startLevelSelector.value < 7) {
-      let difference = 7 - +startLevelSelector.value
+    if (+startLevelSelector.value < 5) {
+      let difference = 5 - +startLevelSelector.value
       maxLevelSelector.selectedIndex = difference-1
     }
-    if (+startLevelSelector.value >= 7) {
+    if (+startLevelSelector.value >= 5) {
       let difference = 10 - +startLevelSelector.value
       maxLevelSelector.selectedIndex = difference-1
     }
-    if (+startLevelSelector.value === 10) {
-      maxLevelSelector.innerHTML = `<option value=${11}>${11}</option>`
+    if (+startLevelSelector.value === 9) {
+      maxLevelSelector.innerHTML = `<option value=${10}>${10}</option>`
     }
     setEndLevel(+maxLevelSelector.value)
   }
 
   const checkMod = stat => {
     let primaryTypes = ["str", "dex", "int", "luk"]
-    let secondaryTypes = ["wa", "ma"]
     if (primaryTypes.includes(stat)) {
-      return 4
-    } if (secondaryTypes.includes(stat)) {
+      return 8
+    } if (stat === "wa") {
       return 16
+    } if (stat === "ma") {
+      return 4
     }
   }
 
@@ -89,23 +90,59 @@ function App() {
     let lvl2Array = []
     const endArray = [levelArray, lvl2Array]  
 
-    const getNormalRollMod = (stat, mod) => {
-      let indivX = 1 + Math.floor(stat/mod)
-      let indivY = (indivX * (indivX + 1) / 2) + indivX
-      let randomZ = Math.floor((Math.random() * indivY + 1))
-      if (randomZ < indivX) {
-        return 0 
+    const getGaussian = () => {
+      let u = Math.random()*0.682;
+      return ((u % 1e-8 > 5e-9 ? 1 : -1) * (Math.sqrt(-Math.log(Math.max(1e-9, u)))-0.618))*1.618 * 1;
+    }
+
+    // Calculates gains based on gaussian distributed pseudorandom number
+    const gaussianLeveling = (stat, mod) => {
+      let min = 1
+      let max = (stat / mod) + 2
+      let mean = (max + min) / 2
+      let deviation = (max - mean) / 2
+      let v; 
+      do {
+        v = getGaussian() * deviation + mean
+      } while (v < min || v > max);
+      return Math.round(v)
+    }
+
+    const uniformLeveling = (stat, mod) => {
+      // Randomizer lower bound = 1, maximum = stat / (mod + 2), lower inclusive, upper exclusive
+      let upperBound = (stat / mod) + 2
+      // Trunc removes any decimal numbers, replicating int type casting in java
+      let result = Math.trunc(Math.random() * (upperBound) + 1);
+      return result
+    }
+
+    const getNormalRollMod = (stat, mod, level) => {
+      if (startLevel >= 5) {
+        return gaussianLeveling(stat, mod)
+        // Starting level is less than 5, end level can be anything
+      } else if (startLevel < 5) {
+          // Leveling from 5 onwards
+          if (level >= 6) {
+            return gaussianLeveling(stat, mod)
+          } else {
+            return uniformLeveling(stat, mod)
+          }
       } else {
-        return (1 + Math.floor((-1 + Math.sqrt((8 * (randomZ - indivX)) + 1)) / 2));          
+          return uniformLeveling(stat, mod)
       }
     }
 
-    const getMaxRollsMod = (stat, mod) => {
+    const getMaxRollsMod = (stat, mod, level) => {
       let i = 0;
-      let iterations = 100000;
+      let iterations;
+      if (level >= 6) {
+        iterations = 1000000;
+      } else {
+        iterations = 100000;
+      }
       let highestValue = 0;
       while (i <= iterations) {
-        const value = getNormalRollMod(stat, mod)
+        const value = getNormalRollMod(stat, mod, level)
         if (value > highestValue) {
           highestValue = value;
         }
@@ -120,6 +157,7 @@ function App() {
         let statValue = Object.values(stat)[0]
         let statName = Object.keys(stat)[0]
         if (statValue > 0) {
+          // Initial Level
           if (i === 0) {
             levelArray.push({
               stat: statName,
@@ -127,13 +165,14 @@ function App() {
               normalStat: statValue
             })
           }
+          // First Level
           if (i === 1) {
             let mod = checkMod(statName)
-            let normalRoll = getNormalRollMod(statValue,mod)
+            let normalRoll = getNormalRollMod(statValue, mod, startLevel + 1)
             let normalStat = statValue + normalRoll
-            let maxFromNorm = getMaxRollsMod(statValue, mod) + statValue
+            let maxFromNorm = getMaxRollsMod(statValue, mod, startLevel + 1) + statValue
             let maxOfMax = maxFromNorm
-            let elsRoll = Math.ceil(0.88 * getMaxRollsMod(statValue,mod))
+            let elsRoll = Math.ceil(0.88 * getMaxRollsMod(statValue,mod, startLevel +1))
             lvl2Array.push({
               stat: statName,
               lvl: startLevel + 1,
@@ -143,16 +182,17 @@ function App() {
               elsRoll: elsRoll
             })
           }
+          // Subsequent Levels
           if (i > 1) {
             let mod = checkMod(statName)
             let prevArray = (endArray[i-1].filter(i => i.stat === statName))
             let prevLevel = prevArray[0].lvl
             let prevNorm = prevArray[0].normalStat
             let prevMom = prevArray[0].maxOfMax
-            let normalStat = getNormalRollMod(prevNorm, mod) + prevNorm
-            let maxFromNorm = getMaxRollsMod(prevNorm, mod) + prevNorm
-            let maxFromMax = getMaxRollsMod(prevMom, mod) + prevMom
-            let elsRoll = Math.ceil(0.88 * getMaxRollsMod(prevMom, mod))
+            let normalStat = getNormalRollMod(prevNorm, mod, prevLevel + 1) + prevNorm
+            let maxFromNorm = getMaxRollsMod(prevNorm, mod, prevLevel + 1) + prevNorm
+            let maxFromMax = getMaxRollsMod(prevMom, mod, prevLevel + 1) + prevMom
+            let elsRoll = Math.ceil(0.88 * getMaxRollsMod(prevMom, mod, prevLevel + 1))
             fillArray.push({
               stat: statName,
               lvl: prevLevel + 1,
@@ -214,8 +254,6 @@ function App() {
     const item = JSON.parse(localStorage.getItem('stats'))
     if (item) {
       setStatArray(item)
-    } else {
-      console.log("No items")
     }
   }
 
@@ -261,7 +299,7 @@ function App() {
             <StatBox statArray={statArray}/>
           </Box> : null}
           <Box pt={10} px={{base: '10', md: '0'}}>
-            <Text textAlign={{base: 'center', lg: 'left'}}>Enhanced Legendary Scroll (ELS) roll is the minimum stat (88% of max) you should look for when ELS-ing. Feel free to take any stats you want, it's just a recommendation.</Text>
+            <Text textAlign={{base: 'center', lg: 'left'}}>Enhancement Scroll (ES) roll is the minimum stat (88% of max) you should look for when ES-ing. Feel free to take any stats you want, it's just a recommendation.</Text>
           </Box>
           <Box py={10}>
             <Text mb={6} fontSize="sm">Created by Moweyy.</Text>
