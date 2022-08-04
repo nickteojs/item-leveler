@@ -2,6 +2,10 @@
 
 This is an item levelling calculator, based on the formula from StoryMS. It simulates item leveling and shows you stats for each level, as well as the max possible stats.
 
+Item-Leveller is built on:
+React
+Chakra UI
+
 View working demo:
 https://mow-leveller.netlify.app/
 
