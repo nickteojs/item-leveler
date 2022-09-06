@@ -99,7 +99,7 @@ function App() {
     // Calculates gains based on gaussian distributed pseudorandom number
     const gaussianLeveling = (stat, mod) => {
       let min = 1
-      let max = (stat / mod) + 2
+      let max = Math.floor(stat / mod) + 2
       let mean = (max + min) / 2
       let deviation = (max - mean) / 2
       let v; 
@@ -111,7 +111,7 @@ function App() {
 
     const uniformLeveling = (stat, mod) => {
       // Randomizer lower bound = 1, maximum = stat / (mod + 2), lower inclusive, upper exclusive
-      let upperBound = (stat / mod) + 2
+      let upperBound = Math.floor(stat / mod) + 2
       // Trunc removes any decimal numbers, replicating int type casting in java
       let result = Math.trunc(Math.random() * (upperBound) + 1);
       return result
